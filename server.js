@@ -30,6 +30,14 @@ const MODEL_MAPPING = {
   'claude-3-sonnet': 'openai/gpt-oss-20b',
   'gemini-pro': 'qwen/qwen3-next-80b-a3b-thinking' 
 };
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    service: 'OpenAI to NVIDIA NIM Proxy', 
+    reasoning_display: SHOW_REASONING,
+    thinking_mode: ENABLE_THINKING_MODE
+  });
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {

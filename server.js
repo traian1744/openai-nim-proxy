@@ -31,47 +31,44 @@ const MODEL_MAPPING = {
   'gemini-pro': 'qwen/qwen3-next-80b-a3b-thinking' 
 };
 
-// Image-to-Video endpoint (proxy to NIM SVD)
-app.post('/v1/video/generations', async (req, res) => {
+// Image-to-video endpoint
+app.post('/v1/image-to-video', async (req, res) => {
   try {
-    const { image, cfg_scale = 1.8, seed } = req.body; // image: base64 string
-
-    if (!image) {
-      return res.status(400).json({ error: { message: 'Missing image base64' } });
+    const { image, prompt, duration = 4, model = "nvidia/videoldm" } = req.body;
+    
+    // Validate image (base64)
+    if (!image || !prompt) {
+      return res.status(400).json({
+        error: "Both 'image' (base64) and 'prompt' are required"
+      });
     }
-
-    // NIM SVD endpoint (different base for genai)
-    const SVD_API_BASE = 'https://ai.api.nvidia.com/v1/genai/stabilityai/stable-video-diffusion';
-
-    const nimRequest = {
-      image, // base64
-      cfg_scale, // 1-10, how much to stick to input image
-      seed: seed || Math.floor(Math.random() * 1000000) // Random if not provided
-    };
-
-    const response = await axios.post(SVD_API_BASE, nimRequest, {
+    
+    // Call NVIDIA NIM for image-to-video
+    // Note: Check actual API endpoint for image-to-video
+    const videoResponse = await axios.post(`${NIM_API_BASE}/image-to-video`, {
+      model: model,
+      image: image,
+      prompt: prompt,
+      duration: duration,
+      num_frames: Math.min(60, Math.floor(duration * 15)), // ~15fps
+      guidance_scale: 8.0
+    }, {
       headers: {
         'Authorization': `Bearer ${NIM_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Content-Type': 'application/json'
       }
     });
-
-    // Transform to simple response (base64 video)
+    
     res.json({
-      data: [{
-        video: response.data.video, // base64 MP4
-        url: `data:video/mp4;base64,${response.data.video}` // For easy playback
-      }]
+      success: true,
+      video_data: videoResponse.data.video, // base64 encoded video
+      metadata: videoResponse.data.metadata
     });
-
+    
   } catch (error) {
-    console.error('Video proxy error:', error.message);
-    res.status(error.response?.status || 500).json({
-      error: {
-        message: error.message || 'Internal server error',
-        code: error.response?.status || 500
-      }
+    console.error("Image-to-video error:", error.message);
+    res.status(500).json({
+      error: error.response?.data?.error || error.message
     });
   }
 });

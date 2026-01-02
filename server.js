@@ -31,45 +31,87 @@ const MODEL_MAPPING = {
   'gemini-pro': 'qwen/qwen3-next-80b-a3b-thinking' 
 };
 
-// Image-to-video endpoint
+// Add this AFTER your chat completions endpoint in server.js
+
+// 🔥 VIDEO GENERATION ENDPOINT (Text-to-Video)
+app.post('/v1/video/generation', async (req, res) => {
+  try {
+    const { 
+      prompt, 
+      negative_prompt = "",
+      num_frames = 24,
+      guidance_scale = 7.5,
+      seed = null
+    } = req.body;
+
+    // First, check if NVIDIA NIM supports video
+    // You might need a different model/endpoint
+    const videoRequest = {
+      model: "nvidia/videoldm",  // Verify this model exists
+      prompt: prompt,
+      negative_prompt: negative_prompt,
+      num_frames: num_frames,
+      guidance_scale: guidance_scale,
+      seed: seed || Math.floor(Math.random() * 1000000)
+    };
+
+    console.log("Sending video request to NVIDIA:", videoRequest);
+
+    const response = await axios.post(
+      `${NIM_API_BASE}/video/generation`,  // ⚠️ Check actual endpoint
+      videoRequest,
+      {
+        headers: {
+          'Authorization': `Bearer ${NIM_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    res.json({
+      success: true,
+      video_data: response.data.video_data || response.data.output,
+      details: response.data
+    });
+
+  } catch (error) {
+    console.error('Video generation error:', error.response?.data || error.message);
+    
+    // Fallback: If NVIDIA doesn't have video, use a placeholder
+    res.status(501).json({
+      error: {
+        message: "Video generation not available. Check if NVIDIA NIM supports video models.",
+        nvidia_error: error.response?.data?.error,
+        suggestion: "Try text-only chat for now"
+      }
+    });
+  }
+});
+
+// 🔥 IMAGE-TO-VIDEO ENDPOINT (If available)
 app.post('/v1/image-to-video', async (req, res) => {
   try {
-    const { image, prompt, duration = 4, model = "nvidia/videoldm" } = req.body;
+    const { image, prompt, duration = 4 } = req.body;
     
-    // Validate image (base64)
     if (!image || !prompt) {
       return res.status(400).json({
-        error: "Both 'image' (base64) and 'prompt' are required"
+        error: "Both image (base64) and prompt are required"
       });
     }
+
+    console.log("Image-to-video request received");
     
-    // Call NVIDIA NIM for image-to-video
-    // Note: Check actual API endpoint for image-to-video
-    const videoResponse = await axios.post(`${NIM_API_BASE}/image-to-video`, {
-      model: model,
-      image: image,
-      prompt: prompt,
-      duration: duration,
-      num_frames: Math.min(60, Math.floor(duration * 15)), // ~15fps
-      guidance_scale: 8.0
-    }, {
-      headers: {
-        'Authorization': `Bearer ${NIM_API_KEY}`,
-        'Content-Type': 'application/json'
+    // Check if NVIDIA supports this
+    res.status(501).json({
+      error: {
+        message: "Image-to-video not yet implemented with NVIDIA NIM",
+        suggestion: "Use /v1/video/generation for text-to-video first"
       }
     });
     
-    res.json({
-      success: true,
-      video_data: videoResponse.data.video, // base64 encoded video
-      metadata: videoResponse.data.metadata
-    });
-    
   } catch (error) {
-    console.error("Image-to-video error:", error.message);
-    res.status(500).json({
-      error: error.response?.data?.error || error.message
-    });
+    console.error("Image-to-video error:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 

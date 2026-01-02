@@ -30,6 +30,52 @@ const MODEL_MAPPING = {
   'claude-3-sonnet': 'openai/gpt-oss-20b',
   'gemini-pro': 'qwen/qwen3-next-80b-a3b-thinking' 
 };
+
+// Image-to-Video endpoint (proxy to NIM SVD)
+app.post('/v1/video/generations', async (req, res) => {
+  try {
+    const { image, cfg_scale = 1.8, seed } = req.body; // image: base64 string
+
+    if (!image) {
+      return res.status(400).json({ error: { message: 'Missing image base64' } });
+    }
+
+    // NIM SVD endpoint (different base for genai)
+    const SVD_API_BASE = 'https://ai.api.nvidia.com/v1/genai/stabilityai/stable-video-diffusion';
+
+    const nimRequest = {
+      image, // base64
+      cfg_scale, // 1-10, how much to stick to input image
+      seed: seed || Math.floor(Math.random() * 1000000) // Random if not provided
+    };
+
+    const response = await axios.post(SVD_API_BASE, nimRequest, {
+      headers: {
+        'Authorization': `Bearer ${NIM_API_KEY}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+
+    // Transform to simple response (base64 video)
+    res.json({
+      data: [{
+        video: response.data.video, // base64 MP4
+        url: `data:video/mp4;base64,${response.data.video}` // For easy playback
+      }]
+    });
+
+  } catch (error) {
+    console.error('Video proxy error:', error.message);
+    res.status(error.response?.status || 500).json({
+      error: {
+        message: error.message || 'Internal server error',
+        code: error.response?.status || 500
+      }
+    });
+  }
+});
+
 app.get('/', (req, res) => {
   res.json({ 
     status: 'ok', 

@@ -28,7 +28,7 @@ const MODEL_MAPPING = {
   'gpt-4o': 'deepseek-ai/deepseek-v3.1-terminus',
   'claude-3-opus': 'deepseek-ai/deepseek-v3.2',
   'claude-3-sonnet': 'nvidia/llama-3.1-nemotron-70b-instruct',
-  'gemini-pro': 'meta/llama3-8b-instruct' 
+  'gemini-pro': 'meta/llama-3.1-8b-instruct' 
 };
 
 // Add this AFTER your chat completions endpoint in server.js

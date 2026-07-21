@@ -1,86 +1,89 @@
-const button =
-document.getElementById("generateButton");
+const API_URL = "http://localhost:3000";
 
 
-button.onclick = async ()=>{
+const promptInput = document.getElementById("prompt");
+const modelInput = document.getElementById("model");
+const sizeInput = document.getElementById("size");
+const countInput = document.getElementById("count");
+
+const button = document.getElementById("generateButton");
+const status = document.getElementById("status");
+const resultImage = document.getElementById("resultImage");
 
 
-const prompt =
-document.getElementById("prompt").value;
+button.onclick = async () => {
+
+    const prompt = promptInput.value;
+
+    if (!prompt) {
+        alert("Poné un prompt");
+        return;
+    }
 
 
-const model =
-document.getElementById("model").value;
+    status.innerText = "Generando imagen...";
+
+    button.disabled = true;
 
 
-const size =
-document.getElementById("size").value;
+    try {
+
+        const response = await fetch(
+            `${API_URL}/v1/images/generations`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    model: modelInput.value,
+
+                    prompt: prompt,
+
+                    size: sizeInput.value,
+
+                    n: Number(countInput.value)
+
+                })
+            }
+        );
 
 
-const count =
-document.getElementById("count").value;
+        const data = await response.json();
 
 
-document.getElementById("status").innerText =
-"Generando imagen...";
+        console.log(data);
 
 
-try{
+        if(data.data && data.data[0]){
+
+            resultImage.src = data.data[0].url;
+
+            status.innerText = "Listo";
+
+        }
+        else {
+
+            throw new Error(
+                JSON.stringify(data)
+            );
+
+        }
 
 
-const response = await fetch(
-"http://localhost:3000/v1/images/generations",
-{
+    } catch(error){
 
-method:"POST",
+        console.error(error);
 
-headers:{
-"Content-Type":"application/json"
-},
+        status.innerText =
+            "Error generando imagen";
 
-body:JSON.stringify({
-
-prompt,
-model,
-size,
-n:Number(count)
-
-})
-
-});
+    }
 
 
-const data = await response.json();
-
-
-console.log(data);
-
-
-
-const img =
-document.getElementById("resultImage");
-
-
-img.src =
-data.data[0].url;
-
-
-img.style.display="block";
-
-
-document.getElementById("status").innerText =
-"Listo";
-
-
-}
-catch(e){
-
-console.error(e);
-
-document.getElementById("status").innerText =
-"Error";
-
-}
-
+    button.disabled = false;
 
 };

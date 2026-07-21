@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NVIDIA Image Studio</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+
+        <h1>NVIDIA Image Studio</h1>
+
+        <p>
+            OpenAI Compatible Proxy
+        </p>
+
+    </header>
+
+    <section class="prompt-section">
+
+        <label>
+
+            Prompt
+
+        </label>
+
+        <textarea
+                id="prompt"
+                placeholder="Describe la imagen..."
+        ></textarea>
+
+    </section>
+
+
+    <section class="references">
+
+        <label>
+
+            Imágenes de referencia
+
+        </label>
+
+        <div id="dropzone">
+
+            Arrastrá imágenes aquí
+
+            <br>
+
+            o
+
+            <br><br>
+
+            <button id="browseButton">
+
+                Seleccionar imágenes
+
+            </button>
+
+            <input
+                    type="file"
+                    id="imageInput"
+                    multiple
+                    accept="image/*"
+                    hidden
+            >
+
+        </div>
+
+        <div id="previewContainer">
+
+        </div>
+
+    </section>
+
+
+    <section class="options">
+
+        <div>
+
+            <label>
+
+                Modelo
+
+            </label>
+
+            <select id="model">
+
+                <option>
+
+                    FLUX.1-Kontext-dev
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>
+
+                Resolución
+
+            </label>
+
+            <select id="size">
+
+                <option value="1024x1024">
+
+                    1024x1024
+
+                </option>
+
+                <option value="1536x1024">
+
+                    1536x1024
+
+                </option>
+
+                <option value="1024x1536">
+
+                    1024x1536
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label>
+
+                Cantidad
+
+            </label>
+
+            <input
+                    id="count"
+                    type="number"
+                    value="1"
+                    min="1"
+                    max="8"
+            >
+
+        </div>
+
+    </section>
+
+
+    <section class="generate">
+
+        <button id="generateButton">
+
+            Generar Imagen
+
+        </button>
+
+    </section>
+
+
+    <section>
+
+        <div id="status">
+
+            Esperando...
+
+        </div>
+
+    </section>
+
+
+    <section id="resultSection">
+
+        <img
+                id="resultImage"
+                alt="Resultado"
+        >
+
+    </section>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

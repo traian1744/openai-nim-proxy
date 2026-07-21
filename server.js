@@ -173,7 +173,7 @@ const response = await axios.post(
         width: 1024,
         height: 1024,
         seed: 0,
-        steps: 4
+        steps: 5
     },
     {
         headers:{

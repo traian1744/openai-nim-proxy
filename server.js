@@ -150,48 +150,67 @@ app.get('/v1/models', (req, res) => {
   });
 });
 // IMAGE GENERATION
+// IMAGE GENERATION
 app.post('/v1/images/generations', async (req,res)=>{
 
-    try{
+    try {
 
         const {
             prompt,
-            model = "black-forest-labs/flux.1-schnell",
-            n = 1,
-            size = "1024x1024"
+            model = "black-forest-labs/flux.1-kontext-dev",
+            n = 1
         } = req.body;
+
 
         console.log("IMAGE REQUEST:");
         console.log(req.body);
 
+
         const response = await axios.post(
-            `${NIM_API_BASE}/images/generations`,
+            `https://ai.api.nvidia.com/v1/genai/${model}`,
             {
-                model,
-                prompt,
-                n,
-                size,
-                response_format: "b64_json"
+                prompt: prompt,
+                n: n
             },
             {
                 headers:{
                     Authorization:`Bearer ${NIM_API_KEY}`,
-                    "Content-Type":"application/json"
+                    "Content-Type":"application/json",
+                    Accept:"application/json"
                 }
             }
         );
 
+
+        console.log("NVIDIA RESPONSE:");
+        console.log(response.data);
+
+
         res.json({
             created: Math.floor(Date.now()/1000),
-            data: response.data.data
+            data:[
+                {
+                    b64_json:
+                    response.data.artifacts?.[0]?.base64
+                }
+            ]
         });
 
-    } catch(error){
-        console.error(error.response?.data || error.message);
 
-        res.status(500).json({
+    } catch(error){
+
+        console.error(
+            "IMAGE ERROR:",
+            error.response?.data || error.message
+        );
+
+
+        res.status(
+            error.response?.status || 500
+        ).json({
             error:{
-                message:error.response?.data || error.message
+                message:
+                error.response?.data || error.message
             }
         });
     }

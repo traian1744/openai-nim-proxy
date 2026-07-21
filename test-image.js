@@ -4,7 +4,7 @@ dotenv.config();
 
 console.log("API KEY:", process.env.NIM_API_KEY?.substring(0, 10));
 const response = await fetch(
-    "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell",
+    "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-dev",
     {
         method: "POST",
         headers: {

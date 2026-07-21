@@ -64,8 +64,17 @@ button.onclick = async () => {
 
             const base64 = data.data[0].b64_json;
 
+            console.log(
+                "Inicio base64:",
+                base64.substring(0, 30)
+            );
+
+
             resultImage.src =
-                "data:image/png;base64," + base64;
+                "data:image/jpeg;base64," + base64;
+
+
+            resultImage.style.display = "block";
 
             status.innerText = "Imagen generada";
 

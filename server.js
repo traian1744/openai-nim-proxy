@@ -180,7 +180,7 @@ const response = await fetch(
             width: 1024,
             height: 1024,
             seed: 0,
-            steps: 20
+            steps: 12
         })
     }
 );

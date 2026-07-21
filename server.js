@@ -169,10 +169,13 @@ app.post('/v1/images/generations', async (req,res)=>{
         const response = await axios.post(
             `${NIM_API_BASE}/images/generations`,
             {
-                model,
+                
+ model = "black-forest-labs/flux.1-schnell",
+
                 prompt,
                 n,
                 size
+              
             },
             {
                 headers:{

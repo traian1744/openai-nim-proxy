@@ -169,7 +169,8 @@ app.post('/v1/images/generations', async (req,res)=>{
             `https://ai.api.nvidia.com/v1/genai/${model}`,
             {
                 prompt: prompt,
-                aspect_ratio: "1:1"
+                size: "1024x1024",
+                n: n
             },
             {
                 headers:{
@@ -198,10 +199,10 @@ app.post('/v1/images/generations', async (req,res)=>{
 
     } catch(error){
 
-        console.error(
-            "IMAGE ERROR:",
-            error.response?.data || error.message
-        );
+     console.error(
+    "IMAGE ERROR FULL:",
+    JSON.stringify(error.response?.data || error.message, null, 2)
+);
 
         res.status(500).json({
             error:{

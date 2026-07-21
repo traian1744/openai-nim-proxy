@@ -150,7 +150,6 @@ app.get('/v1/models', (req, res) => {
   });
 });
 // IMAGE GENERATION
-// IMAGE GENERATION
 app.post('/v1/images/generations', async (req,res)=>{
 
     try {
@@ -166,20 +165,51 @@ app.post('/v1/images/generations', async (req,res)=>{
         console.log(req.body);
 
 
-const response = await axios.post(
-    `https://ai.api.nvidia.com/v1/genai/${model}`,
-    {
-        prompt: prompt,
-        aspect_ratio: "1:1"
-    },
-    {
-        headers:{
-            Authorization:`Bearer ${NIM_API_KEY}`,
-            "Content-Type":"application/json",
-            Accept:"application/json"
-        }
+        const response = await axios.post(
+            `https://ai.api.nvidia.com/v1/genai/${model}`,
+            {
+                prompt: prompt,
+                aspect_ratio: "1:1"
+            },
+            {
+                headers:{
+                    Authorization:`Bearer ${NIM_API_KEY}`,
+                    "Content-Type":"application/json",
+                    Accept:"application/json"
+                }
+            }
+        );
+
+
+        console.log("NVIDIA IMAGE RESPONSE:");
+        console.log(response.data);
+
+
+        // Respuesta compatible con OpenAI Images API
+        res.json({
+            created: Math.floor(Date.now()/1000),
+            data:[
+                {
+                    b64_json: response.data.artifacts[0].base64
+                }
+            ]
+        });
+
+
+    } catch(error){
+
+        console.error(
+            "IMAGE ERROR:",
+            error.response?.data || error.message
+        );
+
+        res.status(500).json({
+            error:{
+                message: error.response?.data || error.message,
+                type:"image_generation_error"
+            }
+        });
     }
-);
 
 });
 // Chat completions endpoint (main proxy)

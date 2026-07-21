@@ -148,7 +148,69 @@ app.get('/v1/models', (req, res) => {
     data: models
   });
 });
+// IMAGE GENERATION
+app.post('/v1/images/generations', async (req,res)=>{
 
+    try{
+
+        const {
+            prompt,
+            model="black-forest-labs/flux.1-kontext-dev",
+            n=1,
+            size="1024x1024"
+        } = req.body;
+
+
+        console.log("IMAGE REQUEST:");
+        console.log(req.body);
+
+
+        const response = await axios.post(
+            `${NIM_API_BASE}/images/generations`,
+            {
+                model,
+                prompt,
+                n,
+                size
+            },
+            {
+                headers:{
+                    Authorization:`Bearer ${NIM_API_KEY}`,
+                    "Content-Type":"application/json"
+                }
+            }
+        );
+
+
+        res.json({
+
+            created:Math.floor(Date.now()/1000),
+
+            data:response.data.data
+
+        });
+
+
+    }catch(error){
+
+        console.error(
+            error.response?.data || error.message
+        );
+
+
+        res.status(500).json({
+
+            error:{
+                message:
+                error.response?.data ||
+                error.message
+            }
+
+        });
+
+    }
+
+});
 // Chat completions endpoint (main proxy)
 app.post('/v1/chat/completions', async (req, res) => {
   try {

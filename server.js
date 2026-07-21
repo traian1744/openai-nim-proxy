@@ -165,9 +165,9 @@ app.post('/v1/images/generations', async (req,res)=>{
 
 
 console.log("ENVIANDO A NVIDIA...");
-
+console.log(model);
 const response = await axios.post(
-    `https://ai.api.nvidia.com/v1/genai/${imageModel}`,
+    `https://ai.api.nvidia.com/v1/genai/${model}`,
     {
         prompt: prompt,
         width: 1024,

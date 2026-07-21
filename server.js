@@ -156,8 +156,7 @@ app.post('/v1/images/generations', async (req,res)=>{
 
         const {
             prompt,
-            model = "black-forest-labs/flux.1-kontext-dev",
-            n = 1
+            model = "black-forest-labs/flux.1-schnell"
         } = req.body;
 
 
@@ -168,9 +167,7 @@ app.post('/v1/images/generations', async (req,res)=>{
         const response = await axios.post(
             `https://ai.api.nvidia.com/v1/genai/${model}`,
             {
-                prompt: prompt,
-                size: "1024x1024",
-                n: n
+                prompt: prompt
             },
             {
                 headers:{
@@ -186,7 +183,6 @@ app.post('/v1/images/generations', async (req,res)=>{
         console.log(response.data);
 
 
-        // Respuesta compatible con OpenAI Images API
         res.json({
             created: Math.floor(Date.now()/1000),
             data:[
@@ -199,16 +195,13 @@ app.post('/v1/images/generations', async (req,res)=>{
 
     } catch(error){
 
-     console.error(
-    "IMAGE ERROR FULL:",
-    JSON.stringify(error.response?.data || error.message, null, 2)
-);
+        console.error(
+            "IMAGE ERROR FULL:",
+            JSON.stringify(error.response?.data || error.message, null, 2)
+        );
 
         res.status(500).json({
-            error:{
-                message: error.response?.data || error.message,
-                type:"image_generation_error"
-            }
+            error:error.response?.data || error.message
         });
     }
 

@@ -22,6 +22,7 @@ button.onclick = async () => {
 
 
     status.innerText = "Generando imagen...";
+    resultImage.src = "";
 
     button.disabled = true;
 
@@ -55,14 +56,18 @@ button.onclick = async () => {
         const data = await response.json();
 
 
+        console.log("RESPUESTA BACKEND:");
         console.log(data);
 
 
-        if(data.data && data.data[0]){
+        if (data.data && data.data[0]) {
 
-            resultImage.src = data.data[0].url;
+            const base64 = data.data[0].b64_json;
 
-            status.innerText = "Listo";
+            resultImage.src =
+                "data:image/png;base64," + base64;
+
+            status.innerText = "Imagen generada";
 
         }
         else {
@@ -74,9 +79,9 @@ button.onclick = async () => {
         }
 
 
-    } catch(error){
+    } catch(error) {
 
-        console.error(error);
+        console.error("ERROR:", error);
 
         status.innerText =
             "Error generando imagen";

@@ -166,54 +166,20 @@ app.post('/v1/images/generations', async (req,res)=>{
         console.log(req.body);
 
 
-        const response = await axios.post(
-            `https://ai.api.nvidia.com/v1/genai/${model}`,
-            {
-                prompt: prompt,
-                n: n
-            },
-            {
-                headers:{
-                    Authorization:`Bearer ${NIM_API_KEY}`,
-                    "Content-Type":"application/json",
-                    Accept:"application/json"
-                }
-            }
-        );
-
-
-        console.log("NVIDIA RESPONSE:");
-        console.log(response.data);
-
-
-        res.json({
-            created: Math.floor(Date.now()/1000),
-            data:[
-                {
-                    b64_json:
-                    response.data.artifacts?.[0]?.base64
-                }
-            ]
-        });
-
-
-    } catch(error){
-
-        console.error(
-            "IMAGE ERROR:",
-            error.response?.data || error.message
-        );
-
-
-        res.status(
-            error.response?.status || 500
-        ).json({
-            error:{
-                message:
-                error.response?.data || error.message
-            }
-        });
+const response = await axios.post(
+    `https://ai.api.nvidia.com/v1/genai/${model}`,
+    {
+        prompt: prompt,
+        aspect_ratio: "1:1"
+    },
+    {
+        headers:{
+            Authorization:`Bearer ${NIM_API_KEY}`,
+            "Content-Type":"application/json",
+            Accept:"application/json"
+        }
     }
+);
 
 });
 // Chat completions endpoint (main proxy)

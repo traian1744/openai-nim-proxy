@@ -156,7 +156,7 @@ app.post('/v1/images/generations', async (req,res)=>{
 
         const {
             prompt,
-            model = "black-forest-labs/flux.1-schnell"
+            model
         } = req.body;
 
 
@@ -165,28 +165,32 @@ app.post('/v1/images/generations', async (req,res)=>{
 
 
 console.log("ENVIANDO A NVIDIA...");
-console.log(model);
-const response = await axios.post(
+
+const response = await fetch(
     `https://ai.api.nvidia.com/v1/genai/${model}`,
     {
-        prompt: prompt,
-        width: 1024,
-        height: 1024,
-        seed: 0,
-        steps: 5
-    },
-    {
-        headers:{
-            Authorization:`Bearer ${NIM_API_KEY}`,
-            "Content-Type":"application/json",
-            Accept:"application/json"
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${NIM_API_KEY}`,
+            "Content-Type": "application/json",
+            Accept: "application/json"
         },
-        timeout:120000
+        body: JSON.stringify({
+            prompt: prompt,
+            width: 1024,
+            height: 1024,
+            seed: 0,
+            steps: 5
+        })
     }
 );
 
+console.log("STATUS:", response.status);
+
+const responseData = await response.json();
+
 console.log("NVIDIA RESPONSE:");
-console.log(JSON.stringify(response.data, null, 2));
+console.log(JSON.stringify(responseData, null, 2));
 
 
         console.log("NVIDIA IMAGE RESPONSE:");

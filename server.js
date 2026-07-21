@@ -194,14 +194,14 @@ console.log(JSON.stringify(responseData, null, 2));
 
 
         console.log("NVIDIA IMAGE RESPONSE:");
-        console.log(response.data);
+        console.log(responseData);
 
 
         res.json({
             created: Math.floor(Date.now()/1000),
             data:[
                 {
-                    b64_json: response.data.artifacts[0].base64
+                    b64_json: responseData.artifacts[0].base64
                 }
             ]
         });

@@ -51,11 +51,15 @@ async function getModels() {
 |
 */
 
-async function generateImage(payload) {
+async function generateImage(payload){
 
-    throw new Error(
-        "generateImage() todavía no fue implementado."
+    const response = await client.post(
+        "/images/generations",
+        payload
     );
+
+
+    return response.data;
 
 }
 

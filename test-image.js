@@ -1,6 +1,6 @@
 
 import dotenv from "dotenv";
-
+console.log("API KEY:", process.env.NIM_API_KEY?.substring(0, 10));
 dotenv.config();
 
 const response = await fetch(

@@ -155,27 +155,23 @@ app.post('/v1/images/generations', async (req,res)=>{
     try{
 
         const {
-             prompt,
-             model,
-             n = 1,
-             size = "1024x1024"
+            prompt,
+            model = "black-forest-labs/flux.1-schnell",
+            n = 1,
+            size = "1024x1024"
         } = req.body;
-
 
         console.log("IMAGE REQUEST:");
         console.log(req.body);
 
-
         const response = await axios.post(
             `${NIM_API_BASE}/images/generations`,
             {
-                
- model = "black-forest-labs/flux.1-schnell",
-
+                model,
                 prompt,
                 n,
-                size
-              
+                size,
+                response_format: "b64_json"
             },
             {
                 headers:{
@@ -185,33 +181,19 @@ app.post('/v1/images/generations', async (req,res)=>{
             }
         );
 
-
         res.json({
-
-            created:Math.floor(Date.now()/1000),
-
-            data:response.data.data
-
+            created: Math.floor(Date.now()/1000),
+            data: response.data.data
         });
 
-
-    }catch(error){
-
-        console.error(
-            error.response?.data || error.message
-        );
-
+    } catch(error){
+        console.error(error.response?.data || error.message);
 
         res.status(500).json({
-
             error:{
-                message:
-                error.response?.data ||
-                error.message
+                message:error.response?.data || error.message
             }
-
         });
-
     }
 
 });

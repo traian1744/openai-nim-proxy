@@ -185,7 +185,8 @@ const response = await axios.post(
     }
 );
 
-console.log("NVIDIA RESPONDIO");
+console.log("NVIDIA RESPONSE:");
+console.log(JSON.stringify(response.data, null, 2));
 
 
         console.log("NVIDIA IMAGE RESPONSE:");

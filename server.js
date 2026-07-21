@@ -154,10 +154,10 @@ app.post('/v1/images/generations', async (req,res)=>{
     try{
 
         const {
-            prompt,
-            model="black-forest-labs/flux.1-kontext-dev",
-            n=1,
-            size="1024x1024"
+             prompt,
+             model,
+             n = 1,
+             size = "1024x1024"
         } = req.body;
 
 

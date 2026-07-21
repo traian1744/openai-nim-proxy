@@ -164,19 +164,24 @@ app.post('/v1/images/generations', async (req,res)=>{
         console.log(req.body);
 
 
-        const response = await axios.post(
-            `https://ai.api.nvidia.com/v1/genai/${model}`,
-            {
-                prompt: prompt
-            },
-            {
-                headers:{
-                    Authorization:`Bearer ${NIM_API_KEY}`,
-                    "Content-Type":"application/json",
-                    Accept:"application/json"
-                }
-            }
-        );
+console.log("ENVIANDO A NVIDIA...");
+
+const response = await axios.post(
+    `https://ai.api.nvidia.com/v1/genai/${imageModel}`,
+    {
+        prompt: prompt
+    },
+    {
+        headers:{
+            Authorization:`Bearer ${NIM_API_KEY}`,
+            "Content-Type":"application/json",
+            Accept:"application/json"
+        },
+        timeout:120000
+    }
+);
+
+console.log("NVIDIA RESPONDIO");
 
 
         console.log("NVIDIA IMAGE RESPONSE:");
